@@ -21,7 +21,7 @@
     "@rainbow-me/rainbowkit": "^2.2.8",
     "@tanstack/react-query": "^5.81.5",
     "@wagmi/core": "^2.17.3",
-    "@zoralabs/coins-sdk": "^0.2.4",
+    "@zoralabs/coins-sdk": "^0.2.8",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.524.0",

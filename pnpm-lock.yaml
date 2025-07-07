@@ -45,8 +45,8 @@ importers:
         specifier: ^2.17.3
         version: 2.17.3(@tanstack/query-core@5.81.5)(@types/react@19.1.8)(react@19.1.0)(typescript@5.8.3)(use-sync-external-store@1.5.0(react@19.1.0))(viem@2.31.4(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.67))
       '@zoralabs/coins-sdk':
-        specifier: ^0.2.4
-        version: 0.2.4(abitype@1.0.8(typescript@5.8.3)(zod@3.25.67))(viem@2.31.4(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.67))
+        specifier: ^0.2.8
+        version: 0.2.8(abitype@1.0.8(typescript@5.8.3)(zod@3.25.67))(viem@2.31.4(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.67))
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -1493,8 +1493,8 @@ packages:
   '@walletconnect/window-metadata@1.0.1':
     resolution: {integrity: sha512-9koTqyGrM2cqFRW517BPY/iEtUDx2r1+Pwwu5m7sJ7ka79wi3EyqhqcICk/yDmv6jAS1rjKgTKXlEhanYjijcA==}
 
-  '@zoralabs/coins-sdk@0.2.4':
-    resolution: {integrity: sha512-CAyC3CG8L6ckx2BtacziyKeg2/96qje32aH7u94UdUAiigXe8ovmwvKxud5KSfdozv1u2TH4OLvXbm5zd8GQJg==}
+  '@zoralabs/coins-sdk@0.2.8':
+    resolution: {integrity: sha512-vni9qcdS6/9HUOue7SDir2wHn+SSSDmxfZhBcCzQWdK9NaW/+E5jCWXuQGFgBzKpLc4FN5ktJz36v92BADQE3g==}
     engines: {node: '>=22'}
     peerDependencies:
       abitype: ^1.0.8
@@ -6071,7 +6071,7 @@ snapshots:
       '@walletconnect/window-getters': 1.0.1
       tslib: 1.14.1
 
-  '@zoralabs/coins-sdk@0.2.4(abitype@1.0.8(typescript@5.8.3)(zod@3.25.67))(viem@2.31.4(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.67))':
+  '@zoralabs/coins-sdk@0.2.8(abitype@1.0.8(typescript@5.8.3)(zod@3.25.67))(viem@2.31.4(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.67))':
     dependencies:
       '@hey-api/client-fetch': 0.8.4
       '@zoralabs/protocol-deployments': 0.6.1

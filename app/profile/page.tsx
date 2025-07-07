@@ -5,16 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import {
-  ArrowLeft,
-  Settings,
-  Share,
-  Users,
-  Zap,
-  Grid3X3,
-  List,
-  Play,
-} from "lucide-react";
+import { ArrowLeft, Settings, Share, Grid3X3, List, Play } from "lucide-react";
 import Link from "next/link";
 import { sdk } from "@farcaster/frame-sdk";
 
@@ -37,44 +28,13 @@ interface ProfileData {
   verified: boolean;
 }
 
-const userVideos = [
-  {
-    id: 1,
-    thumbnail: "/placeholder.svg?height=200&width=150",
-    views: 1247,
-    duration: "0:15",
-  },
-  {
-    id: 2,
-    thumbnail: "/placeholder.svg?height=200&width=150",
-    views: 892,
-    duration: "0:23",
-  },
-  {
-    id: 3,
-    thumbnail: "/placeholder.svg?height=200&width=150",
-    views: 2156,
-    duration: "0:18",
-  },
-  {
-    id: 4,
-    thumbnail: "/placeholder.svg?height=200&width=150",
-    views: 654,
-    duration: "0:31",
-  },
-  {
-    id: 5,
-    thumbnail: "/placeholder.svg?height=200&width=150",
-    views: 1834,
-    duration: "0:12",
-  },
-  {
-    id: 6,
-    thumbnail: "/placeholder.svg?height=200&width=150",
-    views: 743,
-    duration: "0:27",
-  },
-];
+type Video = {
+  _id?: string;
+  videoCid?: string;
+  thumbnail?: string;
+  views?: number;
+  duration?: string;
+};
 
 export default function ProfilePage() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -90,21 +50,19 @@ export default function ProfilePage() {
     verified: false,
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [fid, setFid] = useState<string>("");
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
+  const [userVideos, setUserVideos] = useState<Video[]>([]);
 
   useEffect(() => {
     const loadProfileData = async () => {
       try {
-        // Initialize the Farcaster SDK
         await sdk.actions.ready({ disableNativeGestures: true });
-
-        // Get the user context from the SDK
         const context = await sdk.context;
-        console.log("Farcaster context:", context);
-
         if (context?.user) {
           const user: FarcasterUser = context.user;
-
-          // Update profile data with real Farcaster information
+          setFid(user.fid.toString());
           setProfileData({
             handle: user.username ? `@${user.username}` : `@fid_${user.fid}`,
             displayName: user.displayName || `User ${user.fid}`,
@@ -152,6 +110,34 @@ export default function ProfilePage() {
 
     loadProfileData();
   }, []);
+
+  // Fetch videos for FID
+  useEffect(() => {
+    if (!fid) return;
+    setSearchLoading(true);
+    setSearchError(null);
+    fetch(`/api/users/${fid}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && Array.isArray(data.videos)) {
+          setUserVideos(data.videos);
+          if (data.videos.length === 0) {
+            setSearchError("No videos found for this FID");
+          } else {
+            setSearchError(null);
+          }
+        } else {
+          setUserVideos([]);
+          setSearchError("No videos found for this FID");
+        }
+        setSearchLoading(false);
+      })
+      .catch(() => {
+        setUserVideos([]);
+        setSearchError("Failed to fetch videos");
+        setSearchLoading(false);
+      });
+  }, [fid]);
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -222,45 +208,16 @@ export default function ProfilePage() {
               </div>
               <p className="text-white/60 text-sm mb-3">{profileData.bio}</p>
 
-              {/* Stats */}
-              <div className="flex gap-6 text-sm">
+              {/* Total Videos Created */}
+              <div className="flex gap-6 text-sm mt-2">
                 <div className="text-center">
                   <div className="font-bold text-white">
-                    {profileData.followers.toLocaleString()}
+                    {userVideos.length}
                   </div>
-                  <div className="text-white/60">Followers</div>
-                </div>
-                <div className="text-center">
-                  <div className="font-bold text-white">
-                    {profileData.following.toLocaleString()}
-                  </div>
-                  <div className="text-white/60">Following</div>
+                  <div className="text-white/60">Videos Created</div>
                 </div>
               </div>
             </div>
-          </div>
-
-          {/* Token Stats */}
-          <div className="grid grid-cols-2 gap-4">
-            <Card className="bg-gradient-to-r from-purple-500/10 to-purple-500/5 border-purple-500/20">
-              <CardContent className="p-4 text-center">
-                <Zap className="h-6 w-6 text-purple-400 mx-auto mb-2" />
-                <div className="text-lg font-bold text-white">
-                  {profileData.totalTokensMinted.toLocaleString()}
-                </div>
-                <div className="text-xs text-white/60">Tokens Minted</div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-gradient-to-r from-blue-500/10 to-blue-500/5 border-blue-500/20">
-              <CardContent className="p-4 text-center">
-                <Users className="h-6 w-6 text-blue-400 mx-auto mb-2" />
-                <div className="text-lg font-bold text-white">
-                  {profileData.totalHolders.toLocaleString()}
-                </div>
-                <div className="text-xs text-white/60">Total Holders</div>
-              </CardContent>
-            </Card>
           </div>
 
           {/* Action Buttons */}
@@ -315,28 +272,41 @@ export default function ProfilePage() {
           </div>
 
           {/* Videos Grid */}
-          {viewMode === "grid" ? (
+          {searchLoading ? (
+            <div className="p-4 text-white/60">Loading videos...</div>
+          ) : searchError ? (
+            <div className="p-4 text-red-400">{searchError}</div>
+          ) : userVideos.length === 0 ? (
+            <div className="p-4 text-white/60">No videos found.</div>
+          ) : viewMode === "grid" ? (
             <div className="grid grid-cols-3 gap-1 p-4 pt-0">
               {userVideos.map((video) => (
                 <Link
-                  key={video.id}
-                  href="/"
+                  key={video._id || video.videoCid}
+                  href={video._id ? `/?id=${video._id}` : "/"}
                   className="relative aspect-[3/4] group"
                 >
                   <div className="w-full h-full bg-white/5 rounded-lg overflow-hidden">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={video.thumbnail || "/placeholder.svg"}
-                      alt="Video thumbnail"
+                    <video
+                      src={
+                        video.videoCid
+                          ? `https://gateway.pinata.cloud/ipfs/${video.videoCid}`
+                          : undefined
+                      }
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                      muted
+                      autoPlay
+                      loop
+                      playsInline
+                      preload="metadata"
                     />
                     <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
                     <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-1.5 py-0.5 rounded">
-                      {video.duration}
+                      {video.duration || "-"}
                     </div>
                     <div className="absolute bottom-2 left-2 flex items-center gap-1 text-white text-xs">
                       <Play className="h-3 w-3 fill-current" />
-                      {video.views}
+                      {video.views || 0}
                     </div>
                   </div>
                 </Link>
@@ -345,25 +315,36 @@ export default function ProfilePage() {
           ) : (
             <div className="p-4 pt-0 space-y-3">
               {userVideos.map((video) => (
-                <Link key={video.id} href="/" className="block">
+                <Link
+                  key={video._id || video.videoCid}
+                  href={video._id ? `/?id=${video._id}` : "/"}
+                  className="block"
+                >
                   <Card className="bg-white/5 border-white/10 hover:bg-white/10 transition-all duration-200">
                     <CardContent className="p-3">
                       <div className="flex gap-3">
                         <div className="w-16 h-20 bg-white/5 rounded-lg overflow-hidden flex-shrink-0">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={video.thumbnail || "/placeholder.svg"}
-                            alt="Video thumbnail"
+                          <video
+                            src={
+                              video.videoCid
+                                ? `https://gateway.pinata.cloud/ipfs/${video.videoCid}`
+                                : undefined
+                            }
                             className="w-full h-full object-cover"
+                            muted
+                            autoPlay
+                            loop
+                            playsInline
+                            preload="metadata"
                           />
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center gap-2 text-white/60 text-sm mb-1">
                             <Play className="h-3 w-3" />
-                            {video.views} views
+                            {video.views || 0} views
                           </div>
                           <div className="text-white/60 text-sm">
-                            Duration: {video.duration}
+                            Duration: {video.duration || "-"}
                           </div>
                         </div>
                       </div>

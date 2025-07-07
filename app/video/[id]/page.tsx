@@ -5,7 +5,6 @@ import type React from "react";
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import {
   Heart,
@@ -24,55 +23,6 @@ import {
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { sdk } from "@farcaster/frame-sdk";
-
-// Mock video data - in real app this would come from API
-const videoData = {
-  1: {
-    id: 1,
-    creator: "@alice_creates",
-    displayName: "Alice Creates",
-    caption: "Building the future of decentralized social media 🚀",
-    likes: 1247,
-    holders: 102,
-    tokensMinted: 2300,
-    mintPrice: "0.005",
-    boosted: true,
-    avatar: "/placeholder.svg?height=40&width=40",
-    videoUrl:
-      "https://www.riotgames.com/darkroom/original/eedccd01fe642a9a6f5b5a4725c3c1c7:cab5f0653154a0cf9a07d7dc3334a71e/rg-brand-cinematic.mp4",
-    timestamp: "2 hours ago",
-  },
-  2: {
-    id: 2,
-    creator: "@crypto_artist",
-    displayName: "Crypto Artist",
-    caption: "New NFT drop coming soon! What do you think? 🎨",
-    likes: 892,
-    holders: 67,
-    tokensMinted: 1850,
-    mintPrice: "0.003",
-    boosted: false,
-    avatar: "/placeholder.svg?height=40&width=40",
-    videoUrl:
-      "https://www.riotgames.com/darkroom/original/eedccd01fe642a9a6f5b5a4725c3c1c7:cab5f0653154a0cf9a07d7dc3334a71e/rg-brand-cinematic.mp4",
-    timestamp: "5 hours ago",
-  },
-  3: {
-    id: 3,
-    creator: "@web3_builder",
-    displayName: "Web3 Builder",
-    caption: "Just shipped a new DeFi protocol. AMA! 💻",
-    likes: 2156,
-    holders: 234,
-    tokensMinted: 4200,
-    mintPrice: "0.008",
-    boosted: true,
-    avatar: "/placeholder.svg?height=40&width=40",
-    videoUrl:
-      "https://www.riotgames.com/darkroom/original/eedccd01fe642a9a6f5b5a4725c3c1c7:cab5f0653154a0cf9a07d7dc3334a71e/rg-brand-cinematic.mp4",
-    timestamp: "1 day ago",
-  },
-};
 
 // Mock comments data
 const commentsData = [
@@ -160,10 +110,64 @@ const commentsData = [
   },
 ];
 
+type Video = {
+  _id?: string;
+  title: string;
+  description: string;
+  videoCid: string;
+  metadataCid: string;
+  tokenData: {
+    name: string;
+    symbol: string;
+    supply: number;
+    price: string;
+    chain: string;
+    royalties: boolean;
+  };
+  creatorInfo: {
+    fid: number;
+    username: string;
+    displayName: string;
+    pfpUrl: string;
+    walletAddress: string;
+  };
+  transactionHash: string;
+  coinAddress: string;
+  createdAt: { $date: string } | string;
+  updatedAt: { $date: string } | string;
+  views: number;
+  likes: number;
+  shares: number;
+};
+
 export default function VideoPage() {
-  const params = useParams();
-  const videoId = Number(params.id);
-  const video = videoData[videoId as keyof typeof videoData];
+  const { id } = useParams();
+  const [video, setVideo] = useState<Video | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!id) return;
+    setLoading(true);
+    setError(null);
+    fetch(`/api/videos/${id}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Video not found");
+        return res.json();
+      })
+      .then((data) => {
+        if (data && data.video) {
+          setVideo(data.video);
+        } else {
+          setError("Video not found");
+        }
+        setLoading(false);
+      })
+      .catch(() => {
+        setError("Video not found");
+        setLoading(false);
+      });
+  }, [id]);
 
   const [liked, setLiked] = useState(false);
   const [minting, setMinting] = useState(false);
@@ -228,25 +232,26 @@ export default function VideoPage() {
     }
   };
 
-  if (!video) {
+  if (loading) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center p-4">
-        <div className="text-center">
-          <h2 className="text-xl sm:text-2xl font-bold mb-2">
-            Video Not Found
-          </h2>
-          <p className="text-white/60 mb-4 text-sm sm:text-base">
-            The video you&apos;re looking for doesn&apos;t exist.
-          </p>
-          <Link href="/">
-            <Button className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white touch-target">
-              Back to Feed
-            </Button>
-          </Link>
-        </div>
+      <div className="flex items-center justify-center min-h-screen text-white">
+        Loading video...
       </div>
     );
   }
+
+  if (error || !video) {
+    return (
+      <div className="flex items-center justify-center min-h-screen text-white">
+        {error || "Video not found"}
+      </div>
+    );
+  }
+
+  // Use Pinata gateway for video playback
+  const videoUrl = video.videoCid
+    ? `https://gateway.pinata.cloud/ipfs/${video.videoCid}`
+    : undefined;
 
   const handleLike = () => {
     setLiked(!liked);
@@ -325,13 +330,15 @@ export default function VideoPage() {
             </Link>
             <div className="flex items-center gap-2 min-w-0 flex-1">
               <Avatar className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0">
-                <AvatarImage src={video.avatar || "/placeholder.svg"} />
+                <AvatarImage
+                  src={video.creatorInfo?.pfpUrl || "/placeholder.svg"}
+                />
                 <AvatarFallback>
-                  {video.creator[1].toUpperCase()}
+                  {video.creatorInfo?.displayName?.[0]}
                 </AvatarFallback>
               </Avatar>
               <span className="font-semibold text-sm sm:text-base truncate">
-                {video.creator}
+                {video.creatorInfo?.displayName || "Unknown"}
               </span>
             </div>
           </div>
@@ -355,39 +362,37 @@ export default function VideoPage() {
             playsInline
             controls
           >
-            <source src={video.videoUrl} type="video/mp4" />
+            <source src={videoUrl} type="video/mp4" />
           </video>
 
           {/* Video Overlay Info */}
           <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
             <div className="flex items-center gap-2 mb-2">
               <span className="text-white font-semibold text-sm sm:text-base">
-                {video.creator}
+                {video.creatorInfo?.displayName || "Unknown"}
               </span>
-              {video.boosted && (
-                <Badge className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black text-xs">
-                  Boosted
-                </Badge>
-              )}
               <span className="text-white/60 text-xs sm:text-sm">
-                • {video.timestamp}
+                •{" "}
+                {typeof video.createdAt === "string"
+                  ? video.createdAt
+                  : video.createdAt?.$date || ""}
               </span>
             </div>
             <p className="text-white text-sm leading-relaxed mb-3 line-clamp-2">
-              {video.caption}
+              {video.description}
             </p>
             <div className="flex items-center gap-3 sm:gap-4 text-white/80 text-xs">
               <div className="flex items-center gap-1">
                 <Users className="h-3 w-3" />
-                <span>{video.holders} holders</span>
+                <span>{video.views || 0} views</span>
               </div>
               <div className="flex items-center gap-1">
                 <Zap className="h-3 w-3" />
                 <span className="hidden sm:inline">
-                  {video.tokensMinted.toLocaleString()} tokens minted
+                  {video.tokenData.supply.toLocaleString()} tokens minted
                 </span>
                 <span className="sm:hidden">
-                  {(video.tokensMinted / 1000).toFixed(1)}K minted
+                  {(video.tokenData.supply / 1000).toFixed(1)}K minted
                 </span>
               </div>
             </div>
@@ -414,7 +419,7 @@ export default function VideoPage() {
                 />
               </Button>
               <span className="text-white text-xs font-medium">
-                {(video.likes + (liked ? 1 : 0)).toLocaleString()}
+                {(video.likes || 0).toLocaleString()}
               </span>
             </div>
 
@@ -449,7 +454,7 @@ export default function VideoPage() {
                 )}
               </Button>
               <span className="text-white text-xs font-medium">
-                {video.mintPrice} ETH
+                {video.tokenData.price} ETH
               </span>
             </div>
 
