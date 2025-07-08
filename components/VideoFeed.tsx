@@ -33,6 +33,7 @@ import {
 import { parseEther } from "viem";
 import { base } from "viem/chains";
 import type { Account } from "viem";
+import Image from "next/image";
 
 // Comment type for API
 type Comment = {
@@ -319,7 +320,7 @@ export default function VideoFeed() {
         setCurrentVideo((prev) => prev - 1);
       }
     },
-    [currentVideo]
+    [currentVideo, videos.length]
   );
 
   const onTouchStart = (e: React.TouchEvent) => {
@@ -364,7 +365,7 @@ export default function VideoFeed() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [currentVideo]);
+  }, [currentVideo, videos.length]);
 
   useEffect(() => {
     const current = videoRefs.current[currentVideo];
@@ -378,7 +379,6 @@ export default function VideoFeed() {
         video.muted = true;
       }
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentVideo]);
 
   // Remove onTouchMove from JSX and attach natively
@@ -508,7 +508,29 @@ export default function VideoFeed() {
   if (loading) {
     return (
       <div className="h-screen flex items-center justify-center bg-black text-white">
-        Loading videos...
+        <div className="flex flex-col items-center gap-4">
+          {/* Dual Ring Spinner */}
+          <div className="relative w-14 h-14">
+            <div className="absolute inset-0 rounded-full border-4 border-purple-500/30 border-t-purple-500 animate-spin" />
+            <div className="absolute inset-2 rounded-full border-4 border-blue-500/30 border-t-blue-500 animate-spin-slow" />
+          </div>
+          <div className="text-lg font-semibold text-white/80 animate-pulse">
+            Fetching the latest moments...
+          </div>
+        </div>
+        <style jsx>{`
+          .animate-spin-slow {
+            animation: spin 2s linear infinite;
+          }
+          @keyframes spin {
+            0% {
+              transform: rotate(0deg);
+            }
+            100% {
+              transform: rotate(360deg);
+            }
+          }
+        `}</style>
       </div>
     );
   }
@@ -526,9 +548,16 @@ export default function VideoFeed() {
       {/* Mobile Navigation */}
       <nav className="absolute top-0 left-0 right-0 z-50">
         <div className="flex justify-between items-center p-3 sm:p-4 bg-gradient-to-b from-black/70 to-transparent">
-          <h1 className="text-white font-bold text-lg sm:text-xl">
-            Farcaster Reels
-          </h1>
+          <div className="flex items-center gap-2">
+            <Image
+              src="/icon.png"
+              alt="Logo"
+              width={32}
+              height={32}
+              className="w-7 h-7 sm:w-8 sm:h-8 rounded"
+            />
+            <h1 className="text-white font-bold text-lg sm:text-xl">Moments</h1>
+          </div>
 
           {/* Desktop Navigation */}
           <div className="hidden sm:flex gap-2">

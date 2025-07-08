@@ -9,24 +9,24 @@ const inter = Inter({ subsets: ["latin"] });
 
 const frame = {
   version: "next",
-  imageUrl: `https://gateway.lighthouse.storage/ipfs/bafybeihzmtqcmhrpgksye3y3knpfwtmvua2qs4tixeewrakq6gv3ijzgjy`,
+  imageUrl: APP_URL + "/icon.png",
   button: {
     title: "Watch Moments",
     action: {
       type: "launch_frame",
-      name: "Farcaster Moments",
+      name: "Moments",
       url: APP_URL,
-      splashImageUrl: `https://gateway.lighthouse.storage/ipfs/bafkreihhuuxqhhibsdssdcpyflhjto5yzlgbknqkl7vexks4zoualqvnle`,
-      splashBackgroundColor: "#000000",
+      splashImageUrl: APP_URL + "/icon.png",
+      splashBackgroundColor: "#FFFFFF",
     },
   },
 };
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: "Farcaster Reels - Decentralized Video Platform",
+    title: "Moments - Decentralized Video Platform",
     openGraph: {
-      title: "Farcaster Reels - Decentralized Video Platform",
+      title: "Moments - Decentralized Video Platform",
       description:
         "Create, mint, and share short-form videos on the decentralized web",
     },

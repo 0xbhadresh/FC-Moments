@@ -1,0 +1,19 @@
+{
+    "frame": {
+      "name": "Moments",
+      "version": "1",
+      "iconUrl": "https://farcaster-moments.vercel.app/icon.png",
+      "homeUrl": "https://farcaster-moments.vercel.app",
+      "imageUrl": "https://gateway.lighthouse.storage/ipfs/bafybeihay774eo6ffd2vkpxe7clcdrmc43lsf7ecsf4wev2ky2vaa6mj3a",
+      "splashImageUrl": "https://farcaster-moments.vercel.app/icon.png",
+      "splashBackgroundColor": "#FFFFFF",
+      "webhookUrl": "https://farcaster-moments.vercel.app/api/webhook",
+      "primaryCategory": "social",
+      "screenshotUrls": [
+        "https://gateway.lighthouse.storage/ipfs/bafybeihay774eo6ffd2vkpxe7clcdrmc43lsf7ecsf4wev2ky2vaa6mj3a"
+      ],
+      "heroImageUrl": "https://gateway.lighthouse.storage/ipfs/bafybeihay774eo6ffd2vkpxe7clcdrmc43lsf7ecsf4wev2ky2vaa6mj3a",
+      "subtitle": "The first short video platform built for Farcaster - post, mint, flex.",
+      "description": "Moments is Farcaster’s home for onchain Shorts. Drop a video, mint your own ERC-20 token with Zora, and let your followers collect the moment. It’s like TikTok but fully decentralized — no algos, no ads (unless you want them). Just pure creator economy energy. Your content gets minted, your clout gets tokenized, and your feed gets rewarded. Built for the early, powered by Zora, boosted by the Farcaster fam."
+    }
+  }

@@ -14,7 +14,7 @@ export async function GET() {
       .toArray();
 
     return NextResponse.json({ users });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Failed to fetch users" },
       { status: 500 }
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
 
     if (existingUser) {
       // Update existing user
-      const result = await db.collection("users").updateOne(
+      await db.collection("users").updateOne(
         { fid: fid },
         {
           $set: {
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
       isNew: true,
       user,
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Failed to create/update user" },
       { status: 500 }

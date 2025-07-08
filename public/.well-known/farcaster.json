@@ -1,0 +1,33 @@
+{
+  "accountAssociation": {
+    "header": "eyJmaWQiOjcxMDQ1MSwidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweGY4OEEzMjIzOEQ1ZTZiMGZiNTNmQ2YxMjVFYjVEMzIwNjRmMzBDMzQifQ",
+    "payload": "eyJkb21haW4iOiJmYXJjYXN0ZXItbW9tZW50cy52ZXJjZWwuYXBwIn0",
+    "signature": "MHg3YTkxZWUwMmZjZWY3N2NkYTFlNjkxNjdhMTc0NWRhODhlNGNmOTc1OThjOGM5ZjhjN2YyZjQ1OWQ3ZWMwMGExNGNmYjI5MDg0N2U4ZjQwZGM4ZDM2OTIxYTI0MjU1MTVjMDRhZWE0OWFjZWJlZWMxNWMzZmQ1ZmEzNDEzZDA4MjFj"
+  },
+  "miniapp": {
+    "version": "1",
+    "name": "Moments",
+    "iconUrl": "https://farcaster-moments.vercel.app/icon.png",
+    "splashImageUrl": "https://farcaster-moments.vercel.app/icon.png",
+    "splashBackgroundColor": "#FFFFFF",
+    "homeUrl": "https://farcaster-moments.vercel.app",
+    "webhookUrl": "https://farcaster-moments.vercel.app/api/webhook",
+    "subtitle": "post, mint, flex.",
+    "description": "Create, mint, repeat. Moments lets you post short videos on Farcaster and launch a token for each one. Built for the culture, powered by Zora. You own the hype",
+    "screenshotUrls": [
+      "https://gateway.lighthouse.storage/ipfs/bafybeihay774eo6ffd2vkpxe7clcdrmc43lsf7ecsf4wev2ky2vaa6mj3a"
+    ],
+    "primaryCategory": "social",
+    "tags": [
+      "moments",
+      "video",
+      "mint",
+      "social"
+    ],
+    "heroImageUrl": "https://gateway.lighthouse.storage/ipfs/bafybeifejbmaaukd4eesxlmly4xvsu5bg7pqf75nf6u74my5mcsn3khm2q",
+    "tagline": "post, mint, flex.",
+    "ogTitle": "Moments",
+    "ogDescription": "Create, mint, repeat. Moments lets you post short videos on Farcaster and drop a token for each one.",
+    "ogImageUrl": "https://gateway.lighthouse.storage/ipfs/bafybeifejbmaaukd4eesxlmly4xvsu5bg7pqf75nf6u74my5mcsn3khm2q"
+  }
+}

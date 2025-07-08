@@ -35,8 +35,10 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     console.log("[API/coin] Incoming body:", body);
     // Validate required fields
-    const { name, symbol, uri, payoutRecipient, platformReferrer, currency } =
-      body;
+    const { name, symbol, payoutRecipient, platformReferrer, currency } = body;
+    // Always use the static metadata URI
+    const uri =
+      "ipfs://bafkreiavd4zpnrn36hbkr3imkb23jaampbs2axbrgvf6qagpqy7osfs7nu";
     if (!name || !symbol || !uri || !payoutRecipient) {
       console.warn("[API/coin] Missing required fields", {
         name,
